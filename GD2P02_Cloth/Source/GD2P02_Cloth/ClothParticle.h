@@ -17,10 +17,19 @@ public:
 
 	void AddConstraint(ClothConstraint* _constraint);
 
-	inline FVector GetPosition() const { return Position; }
-	inline TArray<ClothConstraint*> GetConstraints() const { return Constraints; }
+	void ApplyForce(FVector _force);
+
+	void ApplyGravity(float _deltaTime);
+
+	void Update(float _deltaTime);
+
+	void OffsetPosition(FVector _offset);
+
 
 	bool SharesConstraint(ClothParticle* _otherParticle);
+	inline FVector GetPosition() const { return Position; }
+	inline TArray<ClothConstraint*> GetConstraints() const { return Constraints; }
+	inline bool IsFixedInPlace() const { return FixedInPlace; }
 
 protected:
 
@@ -31,7 +40,7 @@ protected:
 	FVector Acceleration = { 0.0f, 0.0f, 0.0f };
 
 	float Mass = 1.0f;
-	float Daming = 0.01f;
+	float Damping = 0.01f;
 	bool FixedInPlace = false;
 	bool OnGround = false;
 };

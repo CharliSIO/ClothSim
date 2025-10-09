@@ -33,6 +33,9 @@ void ACloth::BeginPlay()
 	CreateConstraints();
 
 	GenerateMesh();
+
+	// Create a looping timer that calls the fixed update function
+	GetWorldTimerManager().SetTimer(SimulationTimer, this, &ACloth::FixedUpdate, TimeStep, true);
 }
 
 void ACloth::CreateParticles()
@@ -57,7 +60,7 @@ void ACloth::CreateParticles()
 
 			DrawDebugPoint(GetWorld(), ParticlePos, 5.0f, FColor::Green, true);
 
-			bool FixedInPlace = Vert == 0; // Update to make sure not whole top row is fixed in place
+			bool FixedInPlace = Vert == 0 && (Horiz == 0 || Horiz == NumHorizontalParticles - 1); // Update to make sure not whole top row is fixed in place
 
 			ClothParticle* NewParticle = new ClothParticle(ParticlePos, FixedInPlace);
 
@@ -166,6 +169,34 @@ void ACloth::TryCreateTriangles(ClothParticle* _topLeft, ClothParticle* _topRigh
 			ClothTriangles.Add(_topLeftIndex);
 		}
 	}
+}
+
+// Called repeatedly on a timer at 60fps
+void ACloth::FixedUpdate()
+{
+	for (int Vert = 0; Vert < NumVerticalParticles; Vert++)
+	{
+		for (int Horiz = 0; Horiz < NumHorizontalParticles; Horiz++)
+		{
+			ClothParticles[Vert][Horiz]->ApplyGravity(TimeStep);
+
+			// Wind
+			// Pulling
+
+			ClothParticles[Vert][Horiz]->Update(TimeStep);
+		}
+	}
+
+	for (int i = 0; i < ConstraintIterations; i++)
+	{
+		for (ClothConstraint* currentConstraint : ClothConstraints)
+		{
+			// TODO: run update function
+			currentConstraint->Update(TimeStep);
+		}
+	}
+
+	GenerateMesh();
 }
 
 // Called every frame

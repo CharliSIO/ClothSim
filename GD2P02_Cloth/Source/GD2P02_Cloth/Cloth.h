@@ -34,6 +34,8 @@ protected:
 	void TryCreateTriangles(ClothParticle* _topLeft, ClothParticle* _topRight,
 		ClothParticle* _bottomLeft, ClothParticle* _bottomRight, int _topLeftIndex);
 
+	void FixedUpdate();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -66,4 +68,12 @@ protected:
 	float ClothHeight = 200.0f;
 	int NumHorizontalParticles = 15;
 	int NumVerticalParticles = 20;
+
+	// Simulation properties ---
+	FTimerHandle SimulationTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category = Simulation)
+	float TimeStep = 0.01666f; // 1/60 time step
+	UPROPERTY(EditAnywhere, Category = Simulation)
+	int ConstraintIterations = 3;
 };
