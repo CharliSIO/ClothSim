@@ -98,6 +98,50 @@ void ACloth::CreateConstraints()
 
 				DrawDebugLine(GetWorld(), ClothParticles[Vert][Horiz]->GetPosition(), ClothParticles[Vert][Horiz + 1]->GetPosition(), FColor::Blue, true);
 			}
+
+			// Interwoven constraints
+			if (Vert < NumVerticalParticles - 2)
+			{
+				ClothConstraint* NewConstraint = new ClothConstraint(ClothParticles[Vert][Horiz], ClothParticles[Vert + 2][Horiz], true);
+				ClothConstraints.Add(NewConstraint);
+
+				ClothParticles[Vert][Horiz]->AddConstraint(NewConstraint);
+				ClothParticles[Vert + 2][Horiz]->AddConstraint(NewConstraint);
+
+				DrawDebugLine(GetWorld(), ClothParticles[Vert][Horiz]->GetPosition(), ClothParticles[Vert + 2][Horiz]->GetPosition(), FColor::Green, true);
+			}
+
+			if (Horiz < NumHorizontalParticles - 2)
+			{
+				ClothConstraint* NewConstraint = new ClothConstraint(ClothParticles[Vert][Horiz], ClothParticles[Vert][Horiz + 2], true);
+				ClothConstraints.Add(NewConstraint);
+
+				ClothParticles[Vert][Horiz]->AddConstraint(NewConstraint);
+				ClothParticles[Vert][Horiz + 2]->AddConstraint(NewConstraint);
+
+				DrawDebugLine(GetWorld(), ClothParticles[Vert][Horiz]->GetPosition(), ClothParticles[Vert][Horiz + 2]->GetPosition(), FColor::Green, true);
+			}
+			if (Vert < NumVerticalParticles - 3)
+			{
+				ClothConstraint* NewConstraint = new ClothConstraint(ClothParticles[Vert][Horiz], ClothParticles[Vert + 3][Horiz], true);
+				ClothConstraints.Add(NewConstraint);
+
+				ClothParticles[Vert][Horiz]->AddConstraint(NewConstraint);
+				ClothParticles[Vert + 3][Horiz]->AddConstraint(NewConstraint);
+
+				DrawDebugLine(GetWorld(), ClothParticles[Vert][Horiz]->GetPosition(), ClothParticles[Vert + 3][Horiz]->GetPosition(), FColor::Red, true);
+			}
+
+			if (Horiz < NumHorizontalParticles - 3)
+			{
+				ClothConstraint* NewConstraint = new ClothConstraint(ClothParticles[Vert][Horiz], ClothParticles[Vert][Horiz + 3], true);
+				ClothConstraints.Add(NewConstraint);
+
+				ClothParticles[Vert][Horiz]->AddConstraint(NewConstraint);
+				ClothParticles[Vert][Horiz + 3]->AddConstraint(NewConstraint);
+
+				DrawDebugLine(GetWorld(), ClothParticles[Vert][Horiz]->GetPosition(), ClothParticles[Vert][Horiz + 3]->GetPosition(), FColor::Red, true);
+			}
 		}
 	}
 }
@@ -143,26 +187,26 @@ void ACloth::TryCreateTriangles(ClothParticle* _topLeft, ClothParticle* _topRigh
 	int BottomLeftIndex = _topLeftIndex + NumHorizontalParticles;
 	int BottomRightIndex = BottomLeftIndex + 1;
 
-	if (_topLeft->SharesConstraint(_topRight) && _topLeft->SharesConstraint(_bottomLeft))
+	if (_topLeft->SharesBaseConstraint(_topRight) && _topLeft->SharesBaseConstraint(_bottomLeft))
 	{
 		ClothTriangles.Add(_topLeftIndex);
 		ClothTriangles.Add(TopRightIndex);
 		ClothTriangles.Add(BottomLeftIndex);
 
-		if (_bottomRight->SharesConstraint(_topRight) && _bottomRight->SharesConstraint(_bottomLeft))
+		if (_bottomRight->SharesBaseConstraint(_topRight) && _bottomRight->SharesBaseConstraint(_bottomLeft))
 		{
 			ClothTriangles.Add(TopRightIndex);
 			ClothTriangles.Add(BottomRightIndex);
 			ClothTriangles.Add(BottomLeftIndex);
 		}
 	}
-	else if (_topLeft->SharesConstraint(_bottomLeft) && _bottomLeft->SharesConstraint(_bottomRight))
+	else if (_topLeft->SharesBaseConstraint(_bottomLeft) && _bottomLeft->SharesBaseConstraint(_bottomRight))
 	{
 		ClothTriangles.Add(_topLeftIndex);
 		ClothTriangles.Add(BottomRightIndex);
 		ClothTriangles.Add(BottomLeftIndex);
 
-		if (_topRight->SharesConstraint(_topLeft) && _topRight->SharesConstraint(_bottomRight))
+		if (_topRight->SharesBaseConstraint(_topLeft) && _topRight->SharesBaseConstraint(_bottomRight))
 		{
 			ClothTriangles.Add(TopRightIndex);
 			ClothTriangles.Add(BottomRightIndex);
@@ -181,6 +225,8 @@ void ACloth::FixedUpdate()
 			ClothParticles[Vert][Horiz]->ApplyGravity(TimeStep);
 
 			// Wind
+			ClothParticles[Vert][Horiz]->ApplyForce(WindAngle.Vector() * WindStrength);
+
 			// Pulling
 
 			ClothParticles[Vert][Horiz]->Update(TimeStep);
@@ -203,5 +249,16 @@ void ACloth::FixedUpdate()
 void ACloth::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ACloth::DropCloth()
+{
+	for (int Vert = 0; Vert < NumVerticalParticles; Vert++)
+	{
+		for (int Horiz = 0; Horiz < NumHorizontalParticles; Horiz++)
+		{
+			ClothParticles[Vert][Horiz]->SetFixedInPlaced(false);
+		}
+	}
 }
 

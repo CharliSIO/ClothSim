@@ -40,7 +40,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void DropCloth();
 
+	//TODO: Tear cloth. Release constraints between particles
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
@@ -76,4 +79,10 @@ protected:
 	float TimeStep = 0.01666f; // 1/60 time step
 	UPROPERTY(EditAnywhere, Category = Simulation)
 	int ConstraintIterations = 3;
+
+	UPROPERTY(BlueprintReadWrite)
+	FRotator WindAngle = { 0.0f, 0.0f, 0.0f };
+
+	UPROPERTY(BlueprintReadWrite)
+	float WindStrength = 30.0f;
 };

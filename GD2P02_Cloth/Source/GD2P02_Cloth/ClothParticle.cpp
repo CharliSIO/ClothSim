@@ -20,12 +20,17 @@ void ClothParticle::AddConstraint(ClothConstraint* _constraint)
 	Constraints.Add(_constraint);
 }
 
-bool ClothParticle::SharesConstraint(ClothParticle* _otherParticle)
+bool ClothParticle::SharesBaseConstraint(ClothParticle* _otherParticle)
 {
 	for (auto iter : _otherParticle->GetConstraints())
 	{
 		if (Constraints.Contains(iter))
 		{
+			if (iter->IsInterwoven())
+			{
+				return false;
+			}
+
 			return true;
 		}
 	}

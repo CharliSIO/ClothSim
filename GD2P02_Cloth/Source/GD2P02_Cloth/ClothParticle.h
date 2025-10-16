@@ -26,10 +26,12 @@ public:
 	void OffsetPosition(FVector _offset);
 
 
-	bool SharesConstraint(ClothParticle* _otherParticle);
+	bool SharesBaseConstraint(ClothParticle* _otherParticle);
 	inline FVector GetPosition() const { return Position; }
 	inline TArray<ClothConstraint*> GetConstraints() const { return Constraints; }
 	inline bool IsFixedInPlace() const { return FixedInPlace; }
+
+	inline void SetFixedInPlaced(bool _isFixed) { FixedInPlace = _isFixed; }
 
 protected:
 
