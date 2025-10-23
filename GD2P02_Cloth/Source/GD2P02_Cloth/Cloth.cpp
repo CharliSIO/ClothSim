@@ -5,6 +5,8 @@
 
 #include "ClothParticle.h"
 #include "ClothConstraint.h"
+#include "ClothCollidableSphere.h"
+
 #include "Kismet/GameplayStatics.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -27,10 +29,25 @@ void ACloth::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Find and store sphere and capsule
+	AActor* foundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClothCollidableSphere::StaticClass());
+	if (AClothCollidableSphere* foundSphere = Cast<AClothCollidableSphere>(foundActor))
+	{
+		Sphere = foundSphere;
+	}
+
 	ClothMesh->SetMaterial(0, ClothMaterial);
 
 	CreateParticles();
 	CreateConstraints();
+
+
+	// Check for collision here with spheres, capsules, the ground
+	if (Sphere)
+	{
+		FVector SphereCentre = Sphere->GetActorLocation();
+		float SphereRadius = Sphere->GetRadius();
+	}
 
 	GenerateMesh();
 

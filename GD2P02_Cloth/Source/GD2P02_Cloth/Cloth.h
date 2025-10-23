@@ -85,4 +85,10 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	float WindStrength = 30.0f;
+
+
+	// Scene objects -----
+	UPROPERTY()
+	class AClothCollidableSphere* Sphere = nullptr;
+	// -----
 };
